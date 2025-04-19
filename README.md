@@ -1,3 +1,3 @@
 # hackathonbolt
-hurhuhrhruhurhhruhrhruhurhrhhruhrurhurhurhurhu \n
+hurhuhrhruhurhhruhrhruhurhrhhruhrurhurhurhurhu /n
 type shit
