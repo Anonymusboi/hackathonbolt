@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework', # Django REST framework for API development
-    'reentry_jobs.apps.Apiconfig', # Our app for API endpoints
+    'reentry_jobs.apps.ApiConfig', # Our app for API endpoints
 ]
 
 MIDDLEWARE = [

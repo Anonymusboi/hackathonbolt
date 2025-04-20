@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse #testing purposes
 from django.contrib import messages
 from .models import JobSeeker, Employer, JobListing, Application, Profile
 from .forms import (UserRegisterForm, ProfileTypeForm, JobSeekerProfileForm, 
