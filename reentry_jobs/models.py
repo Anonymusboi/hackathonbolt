@@ -21,7 +21,7 @@ class Profile(models.Model):
 
 # Model for job seekers with specific fields relevant to their situation
 class JobSeeker(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='job_seeker')
     skills = models.TextField(help_text="List your skills separated by commas")
     experience = models.TextField(blank=True)  # Work history can be left blank
     certifications = models.TextField(blank=True)  # Any professional certifications

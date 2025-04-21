@@ -1,14 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse #testing purposes
 from django.contrib import messages
 from .models import JobSeeker, Employer, JobListing, Application, Profile
 from .forms import (UserRegisterForm, ProfileTypeForm, JobSeekerProfileForm, 
                    EmployerProfileForm, JobListingForm, ApplicationForm)
 from .matching import JobMatcher
+from rest_framework import  generics
+from .serializers import JobSerializer
+from .models import JobSeeker
 
 
 # Render the homepage
+class APIView(generics.CreateAPIView):
+    queryset = JobSeeker.objects.all()
+    serializer_class = JobSerializer
 def home(request):
     return render(request, 'home.html')
 
