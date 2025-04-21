@@ -19,5 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('reentry_jobs.urls')), #THE FIRST URL IN THE SLASH. For example, https//(website-name)/[THIS URL]/(URLs inside the reentry_jobs app)
+    path('api/', include('reentry_jobs.urls')), #THE FIRST URL IN THE SLASH. For example, https//(website-name)/[THIS URL]/(URLs inside the reentry_jobs app)
+    path('', include('frontend.urls'))
 ]
