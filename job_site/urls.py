@@ -19,6 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('backend.urls')), #THE FIRST URL IN THE SLASH. For example, https//(website-name)/[THIS URL]/(URLs inside the backend app)
+    path('api/', include('backend.urls')), #First URL in the slash. For example, https//(website-name)/[THIS URL]/(URLs inside the backend app)
     path('', include('frontend.urls'))
 ]

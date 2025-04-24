@@ -5,14 +5,43 @@ from .models import JobSeeker, Employer, JobListing, Application, Profile
 from .forms import (UserRegisterForm, ProfileTypeForm, JobSeekerProfileForm, 
                    EmployerProfileForm, JobListingForm, ApplicationForm)
 from .matching import JobMatcher
-from rest_framework import  generics
-from .serializers import JobSerializer
-
+from rest_framework import  generics, status
+from .serializers import JobSerializer, CreateUserProfileSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 # Render the homepage
-class APIView(generics.CreateAPIView):
-    queryset = JobSeeker.objects.all()
-    serializer_class = JobSerializer
+class JobSeekerAPIView(generics.CreateAPIView):
+    queryset = JobSeeker.objects.all() #Queryset to get all job seekers class objects
+    serializer_class = UserRegisterForm #Calls serializer so the data can be serialized and understood
+
+class CreateUserAPIView(APIView):
+    serializer_class = CreateUserProfileSerializer #Calls serializer so the data can be serialized and understood
+    def post(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key): #Checks if the session exists
+            self.request.session.create() #if not, create one
+        serializer = self.serializer_class(data=request.data) #Creates a serializer object with the data from the request
+        if serializer.is_valid(): #checks if the data is valid
+            username = serializer.data.get('username') #Gets the user from the request
+            first_name = self.request.session.session_key #Gets the first name from the request
+            email = serializer.data.get('email') #Gets the email from the request
+            password = serializer.data.get('password') #Gets the password from the request
+            queryset = User.objects.filter(first_name=first_name) #Checks if user exists already
+            if(queryset.exists()): #if user exists
+                user = queryset[0] #Gets the user from the database
+                user.username = username #Sets the username
+                user.first_name = first_name #Sets the first name
+                user.email = email #Sets the email
+                user.set_password(password) #Sets the password
+                user.save(update_fields=['username', 'email', 'password']) #Saves the user in the database
+            else:
+                user = User.objects.create_user(username=username, first_name=first_name, email=email)  # Creates the user in the database
+                user.set_password(password)  # Hashes and sets the password
+                user.save()
+            
+            return Response(CreateUserProfileSerializer(user).data, status=status.HTTP_201_CREATED) #Returns the user in the response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) ##Returns the errors in the response if not filled out properly
 def home(request):
     return render(request, 'home.html')
 
