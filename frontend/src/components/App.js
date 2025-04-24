@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {createRoot} from "react-dom/client" ;
+import HomePage from "./HomePage.js";
 
 export default class App extends Component {
     constructor (props){
@@ -7,7 +8,11 @@ export default class App extends Component {
     }
 
     render() {
-        return(<h1>Testing React Code</h1>)
+        return (
+            <div>
+                <HomePage />  {/* Home page and routing information */}
+            </div>
+        );
     }
 
 }

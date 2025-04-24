@@ -7,7 +7,6 @@ from .forms import (UserRegisterForm, ProfileTypeForm, JobSeekerProfileForm,
 from .matching import JobMatcher
 from rest_framework import  generics
 from .serializers import JobSerializer
-from .models import JobSeeker
 
 
 # Render the homepage
