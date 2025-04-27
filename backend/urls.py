@@ -4,8 +4,8 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.JobSeekerAPIView.as_view(), name='home'), #Replace APIView with home later, this is just for testing purposes
-    path('makeprofile', views.CreateUserAPIView.as_view(), name='create_account'), #API endpoint for creating an account
+    path('', views.home, name='home'), #Replace APIView with home later, this is just for testing purposes
+    path('register', views.register, name='create_account'), #API endpoint for creating an account
     
     # Authentication
     path('register/', views.register, name='register'),

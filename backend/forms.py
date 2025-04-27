@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from .models import JobSeeker, Employer, JobListing, Application
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()  # Add an email field to the registration form (required by default).
-
     class Meta:
         model = User  # This form is based on Django's built-in User model.
         fields = ['username', 'email', 'password1', 'password2']  # Fields to show in the form.
