@@ -4,8 +4,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.home, name='home'), #Replace APIView with home later, this is just for testing purposes
-    path('register', views.register, name='create_account'), #API endpoint for creating an account
+    path('', views.home, name='home'), # Home page
     
     # Authentication
     path('register/', views.register, name='register'),
@@ -14,12 +13,12 @@ urlpatterns = [
     
     # Profile setup
     path('profile-type/', views.profile_type, name='profile_type'),
-    path('job-seeker-profile/', views.job_seeker_profile, name='job_seeker_profile'),
+    path('jobseeker-profile/', views.job_seeker_profile, name='jobseeker_profile'),
     path('employer-profile/', views.employer_profile, name='employer_profile'),
     
     # Dashboards
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('job-seeker-dashboard/', views.job_seeker_dashboard, name='job_seeker_dashboard'),
+    path('jobseeker-dashboard/', views.job_seeker_dashboard, name='jobseeker_dashboard'),
     path('employer-dashboard/', views.employer_dashboard, name='employer_dashboard'),
     
     # Job postings

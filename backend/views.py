@@ -5,42 +5,7 @@ from .models import JobSeeker, Employer, JobListing, Application, Profile
 from .forms import (UserRegisterForm, ProfileTypeForm, JobSeekerProfileForm, 
                    EmployerProfileForm, JobListingForm, ApplicationForm)
 from .matching import JobMatcher
-from rest_framework import  generics, status
-from .serializers import JobSerializer, CreateUserProfileSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.contrib.auth.models import User
 
-# Render the homepage
-class JobSeekerAPIView(generics.CreateAPIView):
-    queryset = JobSeeker.objects.all() #Queryset to get all job seekers class objects
-    serializer_class = CreateUserProfileSerializer #Calls serializer so the data can be serialized and understood
-
-class UserRegisterFormMaker(APIView):
-    form = UserRegisterForm #Calls serializer so the data can be serialized and understood
-    def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key): #Checks if the session exists
-            self.request.session.create() #if not, create one
-        serializer = self.serializer_class(data=request.data) #Creates a serializer object with the data from the request
-        if serializer.is_valid(): #checks if the data is valid
-            username = serializer.data.get('username') #Gets the user from the request
-            email = serializer.data.get('email') #Gets the email from the request
-            password = serializer.data.get('password1') #Gets the password from the request
-            queryset = User.objects.filter(username=username) #Checks if user exists already
-            if(queryset.exists()): #if user exists
-                user = queryset[0] #Gets the user from the database
-                user.username = username #Sets the username
-                user.email = email #Sets the email
-                user.set_password(password) #Sets the password
-                user.save(update_fields=['username', 'email', 'password']) #Saves the user in the database
-            else:
-                user = User.objects.create_user(username=username, email=email)  # Creates the user in the database
-                user.set_password(password)  # Hashes and sets the password
-                user.save()
-            
-            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED) #Returns the user in the response
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) ##Returns the errors in the response if not filled out properly
 def home(request):
     return render(request, 'home.html')
 
@@ -52,7 +17,7 @@ def register(request):
             form.save()  # Create a new user
             username = form.cleaned_data.get('username')  # Get the username
             messages.success(request, f'Account created for {username}! Please complete your profile.') 
-            return redirect('login')  
+            return redirect('login') 
     else:
         form = UserRegisterForm()  # Display empty registration form
     return render(request, 'registration/register.html', {'form': form})  # Render registration template with form
@@ -61,8 +26,10 @@ def register(request):
 # Handle choosing a profile type (Job Seeker or Employer)
 @login_required
 def profile_type(request):
-    if hasattr(request.user, 'profile') or hasattr(request.user,'employer'):  # Redirect if user already has a profile
-        return redirect('profile')
+    if hasattr(request.user, 'jobseeker'):  # Redirect if user already has a choice made
+        return redirect('jobseeker-profile')
+    if hasattr(request.user,'employer'):
+        return redirect('employer-profile')
 
     if request.method == "POST": 
         form = ProfileTypeForm(request.POST)  
@@ -73,7 +40,7 @@ def profile_type(request):
 
             if profile_type == 'job_seeker':  
                 JobSeeker.objects.create(user=request.user)  
-                return redirect('job_seeker_profile')  
+                return redirect('jobseeker_profile')  
             else:
                 Employer.objects.create(user=request.user)  
                 return redirect('employer_profile')  
@@ -94,10 +61,10 @@ def job_seeker_profile(request):
         if form.is_valid():  
             form.save()  
             messages.success(request, 'Profile updated successfully!') 
-            return redirect('job_seeker_dashboard')  
+            return redirect('jobseeker_dashboard')  
     else:
         form = JobSeekerProfileForm(instance=job_seeker)  # Pre-fill form with existing data
-    return render(request, 'job_seeker_profile.html', {'form': form})  
+    return render(request, 'jobseeker_profile.html', {'form': form})  
 
 # Handle Employer profile form
 @login_required
@@ -120,7 +87,7 @@ def employer_profile(request):
 @login_required
 def dashboard(request):
     if hasattr(request.user, 'jobseeker'):  
-        return redirect('job_seeker_dashboard')
+        return redirect('jobseeker_dashboard')
     elif hasattr(request.user, 'employer'):  
         return redirect('employer_dashboard')
     return redirect('profile_type')  
@@ -140,7 +107,7 @@ def job_seeker_dashboard(request):
         'job_seeker': job_seeker,  # Pass job seeker data
         'matched_jobs': matched_jobs,  # Pass matched jobs
     }
-    return render(request, 'job_seeker_dashboard.html', context)  
+    return render(request, 'jobseeker_dashboard.html', context)  
 
 
 # Employer dashboard showing job listings and received applications
@@ -188,7 +155,7 @@ def apply_job(request, job_id):
 
     if Application.objects.filter(job=job, application=job_seeker).exists():  # Check if already applied
         messages.warning(request, 'You have already applied for this job.') 
-        return redirect('job_seeker_dashboard')
+        return redirect('jobseeker_dashboard')
 
     if request.method == "POST":  
         form = ApplicationForm(request.POST)  
@@ -198,7 +165,7 @@ def apply_job(request, job_id):
             application.applicant = job_seeker  # Assign applicant
             application.save()  # Save application
             messages.success(request, 'Application submitted successfully!')  
-            return redirect('job_seeker_dashboard') 
+            return redirect('jobseeker_dashboard') 
     else:
         form = ApplicationForm()  # Empty form
     context = {
