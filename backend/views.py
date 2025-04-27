@@ -26,10 +26,8 @@ def register(request):
 # Handle choosing a profile type (Job Seeker or Employer)
 @login_required
 def profile_type(request):
-    if hasattr(request.user, 'jobseeker'):  # Redirect if user already has a choice made
-        return redirect('jobseeker-profile')
-    if hasattr(request.user,'employer'):
-        return redirect('employer-profile')
+    if hasattr(request.user,'employer') or hasattr(request.user, 'job_seeker'):  # Redirect if user already has a choice made
+        return redirect('dashboard')    
 
     if request.method == "POST": 
         form = ProfileTypeForm(request.POST)  
@@ -39,10 +37,14 @@ def profile_type(request):
             request.user.profile.save()  # Save profile instance
 
             if profile_type == 'job_seeker':  
-                JobSeeker.objects.create(user=request.user)  
-                return redirect('jobseeker_profile')  
+                # Check if JobSeeker already exists
+                if not hasattr(request.user, 'job_seeker'):
+                    JobSeeker.objects.create(user=request.user)  
+                return redirect('job_seeker_profile')  
             else:
-                Employer.objects.create(user=request.user)  
+                # Check if Employer already exists
+                if not hasattr(request.user, 'employer'):
+                    Employer.objects.create(user=request.user)  
                 return redirect('employer_profile')  
     else:
         form = ProfileTypeForm()  # Create empty form if not POST
@@ -55,13 +57,13 @@ def job_seeker_profile(request):
     if hasattr(request.user, 'employer'):  # Block employers from accessing this view
         return redirect('dashboard')
 
-    job_seeker = request.user.jobseeker  # Get the current job seeker's profile
+    job_seeker = request.user.job_seeker  # Get the current job seeker's profile
     if request.method == "POST": 
         form = JobSeekerProfileForm(request.POST, request.FILES, instance=job_seeker)  # Bind form to existing instance and data
         if form.is_valid():  
             form.save()  
             messages.success(request, 'Profile updated successfully!') 
-            return redirect('jobseeker_dashboard')  
+            return redirect('job_seeker_dashboard')  
     else:
         form = JobSeekerProfileForm(instance=job_seeker)  # Pre-fill form with existing data
     return render(request, 'jobseeker_profile.html', {'form': form})  
@@ -69,7 +71,7 @@ def job_seeker_profile(request):
 # Handle Employer profile form
 @login_required
 def employer_profile(request):
-    if hasattr(request.user, 'jobseeker'):  # Block job seekers from accessing this view
+    if hasattr(request.user, 'job_seeker'):  # Block job seekers from accessing this view
         return redirect('dashboard')
 
     employer = request.user.employer  # Get the current employer's profile
@@ -86,7 +88,7 @@ def employer_profile(request):
 # Redirect users to the appropriate dashboard based on their role
 @login_required
 def dashboard(request):
-    if hasattr(request.user, 'jobseeker'):  
+    if hasattr(request.user, 'job_seeker'):  
         return redirect('jobseeker_dashboard')
     elif hasattr(request.user, 'employer'):  
         return redirect('employer_dashboard')
@@ -95,19 +97,19 @@ def dashboard(request):
 # Job Seeker dashboard showing matched jobs
 @login_required
 def job_seeker_dashboard(request):
-    if not hasattr(request.user, 'jobseeker'):  # Ensure only job seekers can access
+    if not hasattr(request.user, 'job_seeker'):  # Ensure only job seekers can access
         return redirect('profile_type')
 
-    job_seeker = request.user.jobseeker  
+    job_seeker = request.user.job_seeker  
     matcher = JobMatcher  
     all_jobs = JobListing.objects.filter(is_felony_ok=True)  # Get only felony-friendly jobs
-    matched_jobs = matcher.match_jobs(job_seeker, all_jobs)  # Find best matches for job seeker
+    matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
 
     context = {
         'job_seeker': job_seeker,  # Pass job seeker data
         'matched_jobs': matched_jobs,  # Pass matched jobs
     }
-    return render(request, 'jobseeker_dashboard.html', context)  
+    return render(request, 'job_seeker_dashboard.html', context)  
 
 
 # Employer dashboard showing job listings and received applications
@@ -147,15 +149,15 @@ def post_job(request):
 # View for job seekers to apply to a job
 @login_required
 def apply_job(request, job_id):
-    if not hasattr(request.user, 'jobseeker'):  # Only job seekers can apply
+    if not hasattr(request.user, 'job_seeker'):  # Only job seekers can apply
         return redirect('profile_type')
 
     job = get_object_or_404(JobListing, id=job_id)  # Fetch job or return 404
-    job_seeker = request.user.jobseeker  # Get current job seeker
+    job_seeker = request.user.job_seeker  # Get current job seeker
 
     if Application.objects.filter(job=job, application=job_seeker).exists():  # Check if already applied
         messages.warning(request, 'You have already applied for this job.') 
-        return redirect('jobseeker_dashboard')
+        return redirect('job_seeker_dashboard')
 
     if request.method == "POST":  
         form = ApplicationForm(request.POST)  
@@ -165,7 +167,7 @@ def apply_job(request, job_id):
             application.applicant = job_seeker  # Assign applicant
             application.save()  # Save application
             messages.success(request, 'Application submitted successfully!')  
-            return redirect('jobseeker_dashboard') 
+            return redirect('job_seeker_dashboard') 
     else:
         form = ApplicationForm()  # Empty form
     context = {

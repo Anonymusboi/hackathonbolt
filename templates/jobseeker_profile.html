@@ -1,4 +1,4 @@
-<form method="POST" action="{% url 'profile_type' %}">
+<form method="POST" action="{% url 'jobseeker_profile' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Submit</button>
