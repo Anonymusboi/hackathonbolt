@@ -7,7 +7,7 @@ from .models import JobSeeker, Employer, JobListing, Application
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User  # This form is based on Django's built-in User model.
-        fields = ['username', 'email', 'password1', 'password2']  # Fields to show in the form.
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']  # Fields to show in the form.
 
 
 class ProfileTypeForm(forms.Form):

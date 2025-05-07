@@ -77,7 +77,10 @@
             <p><strong>Name:</strong> {{ job_seeker.user.first_name }} {{ job_seeker.user.last_name }}</p>
             <p><strong>Email:</strong> {{ job_seeker.user.email }}</p>
             <p><strong>Skills:</strong> {{ job_seeker.skills }}</p>
-            <p><strong>Location:</strong> {{ job_seeker.location }}</p>
+            <p><strong>Experience:</strong> {{ job_seeker.experience }}</p>
+            <p><strong>Certifications:</strong> {{ job_seeker.certifications }}</p>
+            <p><strong>Ready To Work:</strong> {{ job_seeker.ready_to_work }}</p>
+            <p><strong>Anonymous Profile:</strong> {{ job_seeker.anonymous_profile }}</p>
         </div>
 
         <h2>Matched Jobs</h2>
@@ -89,7 +92,7 @@
                         <p><strong>Company:</strong> {{ job.company_name }}</p>
                         <p><strong>Location:</strong> {{ job.location }}</p>
                         <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
-                        <a href="{% url 'apply_job' job.id %}">Apply Now</a>
+                        <a href="{% url 'apply-job' job.id %}">Apply Now</a>
                     </li>
                 {% endfor %}
             </ul>
