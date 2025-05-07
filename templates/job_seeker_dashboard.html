@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .profile-info p {
+            margin: 5px 0;
+        }
+        .job-list {
+            list-style: none;
+            padding: 0;
+        }
+        .job-list li {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .job-list li h3 {
+            margin: 0 0 10px;
+        }
+        .job-list li p {
+            margin: 5px 0;
+        }
+        .job-list li a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .job-list li a:hover {
+            background: #0056b3;
+        }
+        .no-jobs {
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ job_seeker.user.username }}</h1>
+
+        <div class="profile-info">
+            <h2>Your Profile</h2>
+            <p><strong>Name:</strong> {{ job_seeker.user.first_name }} {{ job_seeker.user.last_name }}</p>
+            <p><strong>Email:</strong> {{ job_seeker.user.email }}</p>
+            <p><strong>Skills:</strong> {{ job_seeker.skills }}</p>
+            <p><strong>Location:</strong> {{ job_seeker.location }}</p>
+        </div>
+
+        <h2>Matched Jobs</h2>
+        {% if matched_jobs %}
+            <ul class="job-list">
+                {% for job in matched_jobs %}
+                    <li>
+                        <h3>{{ job.title }}</h3>
+                        <p><strong>Company:</strong> {{ job.company_name }}</p>
+                        <p><strong>Location:</strong> {{ job.location }}</p>
+                        <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
+                        <a href="{% url 'apply_job' job.id %}">Apply Now</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-jobs">No jobs available at the moment. Please check back later.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

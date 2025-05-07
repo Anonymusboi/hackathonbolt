@@ -40,7 +40,7 @@ def profile_type(request):
                 # Check if JobSeeker already exists
                 if not hasattr(request.user, 'job_seeker'):
                     JobSeeker.objects.create(user=request.user)  
-                return redirect('job_seeker_profile')  
+                return redirect('jobseeker_profile')  
             else:
                 # Check if Employer already exists
                 if not hasattr(request.user, 'employer'):
@@ -54,8 +54,8 @@ def profile_type(request):
 # Handle Job Seeker profile form
 @login_required
 def job_seeker_profile(request):
-    if hasattr(request.user, 'employer'):  # Block employers from accessing this view
-        return redirect('dashboard')
+    # if hasattr(request.user, 'employer'):  # Block employers from accessing this view
+    #    return redirect('dashboard')
 
     job_seeker = request.user.job_seeker  # Get the current job seeker's profile
     if request.method == "POST": 
@@ -63,9 +63,9 @@ def job_seeker_profile(request):
         if form.is_valid():  
             form.save()  
             messages.success(request, 'Profile updated successfully!') 
-            return redirect('job_seeker_dashboard')  
+            return redirect('jobseeker_dashboard')  
     else:
-        form = JobSeekerProfileForm(instance=job_seeker)  # Pre-fill form with existing data
+        form = JobSeekerProfileForm()
     return render(request, 'jobseeker_profile.html', {'form': form})  
 
 # Handle Employer profile form
@@ -101,9 +101,13 @@ def job_seeker_dashboard(request):
         return redirect('profile_type')
 
     job_seeker = request.user.job_seeker  
-    matcher = JobMatcher  
+    matcher = JobMatcher()
     all_jobs = JobListing.objects.filter(is_felony_ok=True)  # Get only felony-friendly jobs
-    matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
+    if(all_jobs.count() == 0):  # Check if there are any jobs available:
+        messages.warning(request, 'No jobs available at the moment. Please check back later.')  
+        return render(request, 'job_seeker_dashboard.html', {'job_seeker': job_seeker, 'matched_jobs': []})
+    else:
+        matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
 
     context = {
         'job_seeker': job_seeker,  # Pass job seeker data
