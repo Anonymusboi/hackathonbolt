@@ -127,3 +127,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'auth.User'
 LOGIN_REDIRECT_URL = 'profile_type'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Media files (user-uploaded content)
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

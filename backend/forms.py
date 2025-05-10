@@ -35,7 +35,7 @@ class EmployerProfileForm(forms.ModelForm):
 class JobListingForm(forms.ModelForm):
     class Meta:
         model = JobListing  # Based on the JobListing model.
-        fields = ['title', 'description', 'location', 'skills_required', 'is_felony_ok', 
+        fields = ['employer', 'title', 'description', 'location', 'skills_required', 'is_felony_ok', 
                  'expires_at', 'salary_range', 'job_type']  # Job listing fields to display.
         widgets = {
             'expires_at': forms.DateInput(attrs={'type': 'date'}),  # Use HTML5 date picker for expiration.

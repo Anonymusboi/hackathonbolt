@@ -89,7 +89,7 @@
                 {% for job in matched_jobs %}
                     <li>
                         <h3>{{ job.title }}</h3>
-                        <p><strong>Company:</strong> {{ job.company_name }}</p>
+                        <p><strong>Employer:</strong> {{ job.employer }}</p>
                         <p><strong>Location:</strong> {{ job.location }}</p>
                         <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
                         <a href="{% url 'apply-job' job.id %}">Apply Now</a>

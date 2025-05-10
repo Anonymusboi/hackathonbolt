@@ -2,3 +2,8 @@
     {% csrf_token %}
     <button type="register new user">Register</button>
 </form>
+
+<form action="/api/login/">
+    {% csrf_token %}
+    <button type="login">Login</button>
+</form>

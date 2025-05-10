@@ -105,7 +105,7 @@ def job_seeker_dashboard(request):
     all_jobs = JobListing.objects.filter(is_felony_ok=True)  # Get only felony-friendly jobs
     if(all_jobs.count() == 0):  # Check if there are any jobs available:
         messages.warning(request, 'No jobs available at the moment. Please check back later.')  
-        return render(request, 'job_seeker_dashboard.html', {'job_seeker': job_seeker, 'matched_jobs': []})
+        matched_jobs = []  # No jobs to match
     else:
         matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
 

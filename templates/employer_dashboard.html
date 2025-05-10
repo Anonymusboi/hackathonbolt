@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .profile-info, .job-listings, .applications {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .profile-info p, .job-listings p, .applications p {
+            margin: 5px 0;
+        }
+        .job-listings ul, .applications ul {
+            list-style: none;
+            padding: 0;
+        }
+        .job-listings li, .applications li {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .job-listings li h3, .applications li h3 {
+            margin: 0 0 10px;
+        }
+        .job-listings li a, .applications li a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .job-listings li a:hover, .applications li a:hover {
+            background: #0056b3;
+        }
+        .no-data {
+            text-align: center;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ employer.user.username }}</h1>
+
+        <div class="profile-info">
+            <h2>Your Profile</h2>
+            <p><strong>Name:</strong> {{ employer.user.first_name }} {{ employer.user.last_name }}</p>
+            <p><strong>Email:</strong> {{ employer.user.email }}</p>
+            {% if employer.logo %}
+            <p><strong>Logo:</strong></p>
+            <img src="{{ employer.logo.url }}" alt="Company Logo" style="max-width: 200px; max-height: 200px;">
+            {% else %}
+                <p><strong>Logo:</strong> No logo uploaded</p>
+            {% endif %}
+            <p><strong>Company:</strong> {{ employer.company_name }}</p>
+            <p><strong>Is Felony Friendly:</strong> {{ employer.is_felony_friendly }} </p>
+            <p><strong>Website:</strong> {{ employer.website }} </p>
+            <p><strong>Descrption:</strong> {{ employer.description }}</p>
+        </div>
+
+        <div class="job-listings">
+            <h2>Your Job Listings</h2>
+            {% if job_listings %}
+                <ul>
+                    {% for job in job_listings %}
+                        <li>
+                            <h3>{{ job.title }}</h3>
+                            <p><strong>Location:</strong> {{ job.location }}</p>
+                            <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
+                            <a href="{% url 'view_applications' %}">View Applications</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-data">You have not posted any jobs yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="applications">
+            <h2>Applications Received</h2>
+            {% if applications %}
+                <ul>
+                    {% for application in applications %}
+                        <li>
+                            <h3>{{ application.job.title }}</h3>
+                            <p><strong>Applicant:</strong> {{ application.applicant.user.username }}</p>
+                            <p><strong>Cover Letter:</strong> {{ application.cover_letter|truncatewords:20 }}</p>
+                            <a href="#">View Full Application</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-data">No applications received yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
