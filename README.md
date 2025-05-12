@@ -1,3 +1,3 @@
 # hackathonbolt
-hurhuhrhruhurhhruhrhruhurhrhhruhrurhurhurhurhu <br/>
-type shit
+This app is made to help people with felonies and criminal backgrounds to be able to integrate back into society by connecting them with companies willing to take a risk and let these people have a chance at getting back a normal life. <br/>
+We do this by having a simplistic UI that has a simple click to apply function that helps criminals who might have been in jail for a very long time apply very easily, even if they know little about modern technology.
