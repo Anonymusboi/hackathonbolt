@@ -23,7 +23,9 @@ class JobMatcher:
         
         # Get top matches (limit to 10)
         similar_indices = cosine_similarities.argsort()[0][-10:][::-1]
-        matched_jobs = [(jobs[i], cosine_similarities[0][i]) for i in similar_indices]
+        matched_jobs = [(jobs[int(i)], float(cosine_similarities[0][int(i)])) for i in similar_indices]
+        
+        print(matched_jobs)
         
         return matched_jobs
     

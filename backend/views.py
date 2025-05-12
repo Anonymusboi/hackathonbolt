@@ -108,6 +108,7 @@ def job_seeker_dashboard(request):
         matched_jobs = []  # No jobs to match
     else:
         matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
+        print(matched_jobs)  # Debugging output
 
     context = {
         'job_seeker': job_seeker,  # Pass job seeker data
@@ -159,9 +160,9 @@ def apply_job(request, job_id):
     job = get_object_or_404(JobListing, id=job_id)  # Fetch job or return 404
     job_seeker = request.user.job_seeker  # Get current job seeker
 
-    if Application.objects.filter(job=job, application=job_seeker).exists():  # Check if already applied
+    if Application.objects.filter(job=job, applicant=job_seeker).exists():  # Check if already applied
         messages.warning(request, 'You have already applied for this job.') 
-        return redirect('job_seeker_dashboard')
+        return redirect('jobseeker_dashboard')
 
     if request.method == "POST":  
         form = ApplicationForm(request.POST)  
@@ -171,7 +172,7 @@ def apply_job(request, job_id):
             application.applicant = job_seeker  # Assign applicant
             application.save()  # Save application
             messages.success(request, 'Application submitted successfully!')  
-            return redirect('job_seeker_dashboard') 
+            return redirect('jobseeker_dashboard') 
     else:
         form = ApplicationForm()  # Empty form
     context = {
