@@ -21,8 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('backend.urls')), #First URL in the slash. For example, https//(website-name)/[THIS URL]/(URLs inside the backend app)
-    path('', include('frontend.urls'))
+    path('', include('backend.urls')), #First URL in the slash. For example, https//(website-name)/[THIS URL]/(URLs inside the backend app)
 ]
 
 if settings.DEBUG:

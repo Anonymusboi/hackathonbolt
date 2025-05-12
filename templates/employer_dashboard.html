@@ -84,7 +84,12 @@
             <p><strong>Website:</strong> {{ employer.website }} </p>
             <p><strong>Descrption:</strong> {{ employer.description }}</p>
         </div>
-
+        
+        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+        
         <div class="job-listings">
             <h2>Your Job Listings</h2>
             {% if job_listings %}

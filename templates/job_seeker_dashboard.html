@@ -83,6 +83,11 @@
             <p><strong>Anonymous Profile:</strong> {{ job_seeker.anonymous_profile }}</p>
         </div>
 
+        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+        
         <h2>Matched Jobs</h2>
         {% if matched_jobs %}
             <ul class="job-list">
