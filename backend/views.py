@@ -106,13 +106,14 @@ def job_seeker_dashboard(request):
     if(all_jobs.count() == 0):  # Check if there are any jobs available:
         messages.warning(request, 'No jobs available at the moment. Please check back later.')  
         matched_jobs = []  # No jobs to match
-    else:
+    else:   
         matched_jobs = matcher.match_jobs_to_seeker(job_seeker, all_jobs)  # Find best matches for job seeker
         print(matched_jobs)  # Debugging output
-
+    applications = Application.objects.filter(job__in=all_jobs, applicant=job_seeker)  # Get applications made by the job seeker
     context = {
         'job_seeker': job_seeker,  # Pass job seeker data
         'matched_jobs': matched_jobs,  # Pass matched jobs
+        'applications': applications,  # Pass job applications
     }
     return render(request, 'job_seeker_dashboard.html', context)  
 
@@ -190,3 +191,32 @@ def view_applications(request):
 
     applications = Application.objects.filter(job__employer=request.user.employer)  # Get applications to employer's jobs
     return render(request, 'view_applications.html', {'applications': applications})  # Render list of applications
+
+@login_required
+def delete_job(request, job_id):
+    if not hasattr(request.user, 'employer'):  # Ensure only employers can delete jobs
+        return redirect('profile_type')
+
+    job = get_object_or_404(JobListing, id=job_id, employer=request.user.employer)  # Ensure the job belongs to the employer
+    if request.method == "POST":
+        job.delete()
+        messages.success(request, 'Job deleted successfully!')
+        return redirect('employer_dashboard')
+    return redirect('employer_dashboard')
+
+@login_required
+def change_application_status(request, job_id):
+    if not hasattr(request.user, 'employer'):  # Ensure only employers can change statuses
+        return redirect('profile_type')
+
+    application = get_object_or_404(Application, id=job_id, job__employer=request.user.employer)  # Ensure the application belongs to the employer's job
+
+    if request.method == "POST":
+        new_status = request.POST.get('status')
+        if new_status in dict(Application._meta.get_field('status').choices):  # Validate the new status
+            application.status = new_status
+            application.save()
+            messages.success(request, f"Application status updated to '{application.get_status_display()}'.")
+        else:
+            messages.error(request, "Invalid status selected.")
+    return redirect('employer_dashboard')

@@ -66,6 +66,14 @@
             text-align: center;
             color: #888;
         }
+        .application-box {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f9f9f9; /* Light gray background */
+            border: 1px solid #ddd; /* Light border */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
     </style>
 </head>
 <body>
@@ -97,6 +105,8 @@
                         <p><strong>Employer:</strong> {{ job.employer }}</p>
                         <p><strong>Location:</strong> {{ job.location }}</p>
                         <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
+                        <p><strong>Expires:</strong> {{ job.expires_at }}</p>
+                        <p><strong>Application Status:</strong> {{ job.application_status }}</p>
                         <p><strong>Similarity Score:</strong> {{ similarity|floatformat:2 }}</p>
                         <a href="{% url 'apply_job' job.id %}">Apply Now</a>
                     </li>
@@ -105,6 +115,28 @@
         {% else %}
             <p class="no-jobs">No jobs available at the moment. Please check back later.</p>
         {% endif %}
+
+        <h2>Your Applications</h2>
+        <div class="application-box">
+            {% if applications %}
+                <ul class="application-list" style="list-style: none; padding: 0;">
+                    {% for application in applications %}
+                        <li>
+                            <h3>{{ application.job.title }}</h3>
+                            <p><strong>Employer:</strong> {{ application.job.employer.company_name }}</p>
+                            <p><strong>Location:</strong> {{ application.job.location }}</p>
+                            <p><strong>Applied On:</strong> {{ application.applied_at|date:"F j, Y" }}</p>
+                            <p><strong>Status:</strong> {{ application.get_status_display }}</p>
+                            {% if application.cover_letter %}
+                                <p><strong>Cover Letter:</strong> {{ application.cover_letter|truncatewords:20 }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-applications">You have not applied for any jobs yet.</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

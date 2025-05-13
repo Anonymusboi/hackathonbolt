@@ -100,6 +100,10 @@
                             <h3>{{ job.title }}</h3>
                             <p><strong>Location:</strong> {{ job.location }}</p>
                             <p><strong>Description:</strong> {{ job.description|truncatewords:20 }}</p>
+                            <form method="POST" action="{% url 'delete_job' job.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-button">Retract Job Offer</button>
+                            </form>
                         </li>
                     {% endfor %}
                 </ul>
@@ -123,6 +127,20 @@
                             <p><strong>Applicant:</strong> {{ application.applicant.user.username }}</p>
                             <p><strong>Applied On:</strong> {{ application.applied_at|date:"F j, Y" }}</p>
                             <p><strong>Cover Letter:</strong> {{ application.cover_letter|truncatewords:20 }}</p>
+
+                            <!-- Form to Change Application Status -->
+                            <form method="POST" action="{% url 'change_application_status' application.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <label for="status-{{ application.id }}">Change Status:</label>
+                                <select name="status" id="status-{{ application.id }}">
+                                    <option value="applied" {% if application.status == 'applied' %}selected{% endif %}>Applied</option>
+                                    <option value="reviewed" {% if application.status == 'reviewed' %}selected{% endif %}>Reviewed</option>
+                                    <option value="interview" {% if application.status == 'interview' %}selected{% endif %}>Interview Scheduled</option>
+                                    <option value="hired" {% if application.status == 'hired' %}selected{% endif %}>Hired</option>
+                                    <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                                <button type="submit" class="status-button">Update Status</button>
+                            </form>
                         </li>
                     {% endfor %}
                     <li>
